@@ -3,6 +3,7 @@ import pandas as pd
 import time
 from concurrent.futures import ThreadPoolExecutor, as_completed
 import json
+import os
 
 threads = []
 result = []
@@ -34,7 +35,9 @@ def crawlTiki():
                 except:
                     print(task.result())
 
-
+        df = pd.read_json('tiki.json', lines= True)
+        df.to_csv('tiki.csv', index = False)
+        os.remove('tiki.json')
         print(f'Crawler took {time.time()-start}s')
 
 if __name__ =='__main__':
