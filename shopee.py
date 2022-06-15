@@ -4,6 +4,7 @@ import time
 from concurrent.futures import ThreadPoolExecutor, as_completed
 import json
 import os
+import ast
 
 
 def call_api(url):
@@ -37,6 +38,14 @@ def crawlShopee():
 
         df = pd.read_json('shopee.json', lines= True)
         df.to_csv('shopee.csv', index = False)
+        os.remove('shopee.json')
+        with open('shopee.json', 'w') as f:
+            df = pd.read_csv('shopee.csv')['item_basic'].tolist()
+            for line in df:
+                json.dump(ast.literal_eval(line), f)
+                f.write('\n')
+        df = pd.read_json('shopee.json', lines = True)
+        df.to_csv('shopee.csv')
         os.remove('shopee.json')
         print(f'Crawler took {time.time()-start}s')
 
