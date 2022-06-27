@@ -1,34 +1,32 @@
-import requests
-import pandas as pd
-import time
-from concurrent.futures import ThreadPoolExecutor, as_completed
-import json
-import os
-import sys
-
-
-
-def call_api(url):
-    headers = {'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_10_1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/39.0.2171.95 Safari/537.36'}
-    r = requests.get(url, headers = headers).json()
-    time.sleep(2)
-    return r
-
-def get_detail_tiki(url, idx):
-    try:
-        headers = {'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_10_1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/39.0.2171.95 Safari/537.36'}
-        r = requests.get(url, headers = headers)
-        spec = r.json()['specifications']
-        description = r.json()['description']
-        time.sleep(2)
-        
-    except Exception as e:
-        print(e)
-        spec = 'None'
-        description = 'None'
-    return spec, description, idx
-
 def crawlTiki():
+    import requests
+    import pandas as pd
+    import time
+    from concurrent.futures import ThreadPoolExecutor, as_completed
+    import json
+    import os
+    import sys
+
+    def call_api(url):
+        headers = {'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_10_1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/39.0.2171.95 Safari/537.36'}
+        r = requests.get(url, headers = headers).json()
+        time.sleep(2)
+        return r
+
+    def get_detail_tiki(url, idx):
+        try:
+            headers = {'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_10_1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/39.0.2171.95 Safari/537.36'}
+            r = requests.get(url, headers = headers)
+            spec = r.json()['specifications']
+            description = r.json()['description']
+            time.sleep(2)
+            
+        except Exception as e:
+            print(e)
+            spec = 'None'
+            description = 'None'
+        return spec, description, idx
+
     threads = []
     result = [] 
     with ThreadPoolExecutor(max_workers=10) as executor:
@@ -70,7 +68,7 @@ def crawlTiki():
                 df.loc[row, 'specifications'] = str(spec)
                 sys.stdout.write('\rLoading... %.2f percent' %(100*row/length_product))                
 
-        df.to_csv('tiki.csv', index = False)
+        df.to_csv('/opt/airflow/dags/tiki.csv', index = False)
         os.remove('tiki.json')
         sys.stdout.write('\rCrawler took %.2f seconds' %(time.time()-start))
 

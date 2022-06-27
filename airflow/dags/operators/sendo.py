@@ -1,20 +1,16 @@
-import requests 
-import time
-import requests
-import pandas as pd
-import time
-from concurrent.futures import ThreadPoolExecutor, as_completed
-import json
-import os
-
-
-
-def call_api(url):
-    r = requests.get(url).json()
-    time.sleep(2)
-    return r
-
 def crawlSendo():
+    import requests 
+    import time
+    import requests
+    import pandas as pd
+    import time
+    from concurrent.futures import ThreadPoolExecutor, as_completed
+    import json
+    import os
+    def call_api(url):
+        r = requests.get(url).json()
+        time.sleep(2)
+        return r
     threads = []
     result = []
     with ThreadPoolExecutor(max_workers=15) as executor:
@@ -42,7 +38,7 @@ def crawlSendo():
                     print(e)
 
         df = pd.read_json('sendo.json', lines= True)
-        df.to_csv('sendo.csv', index = False)
+        df.to_csv('/opt/airflow/dags/sendo.csv', index = False)
         os.remove('sendo.json')
         print(f'Crawler took {time.time()-start}s')
 

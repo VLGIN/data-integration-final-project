@@ -1,31 +1,31 @@
-from pydoc import describe
-import requests
-import pandas as pd
-import time
-from concurrent.futures import ThreadPoolExecutor, as_completed
-import json
-import os
-import ast
-# from api import call_shopee_api, get_detail_shopee
-import sys
 
 
-def call_shopee_api(url):
-    r = requests.get(url).json()
-    time.sleep(3)
-    return r
-
-def get_detail_shopee(url, idx):
-    try:
-        r = requests.get(url)
-        r = r.json()['data']['description']
-        time.sleep(2)
-    except:
-        # print('bị chặn')
-        r = None
-    return r, idx
     
 def crawlShopee():
+    from pydoc import describe
+    import requests
+    import pandas as pd
+    import time
+    from concurrent.futures import ThreadPoolExecutor, as_completed
+    import json
+    import os
+    # from api import call_shopee_api, get_detail_shopee
+    import sys
+    def call_shopee_api(url):
+        r = requests.get(url).json()
+        time.sleep(3)
+        return r
+
+    def get_detail_shopee(url, idx):
+        try:
+            r = requests.get(url)
+            r = r.json()['data']['description']
+            time.sleep(2)
+        except:
+            # print('bị chặn')
+            r = None
+        return r, idx
+
     threads = []
     result = []
     with ThreadPoolExecutor(max_workers=15) as executor:
@@ -60,8 +60,11 @@ def crawlShopee():
     with open('shopee.json', 'w') as f:
         df = pd.read_csv('shopee.csv')['item_basic'].tolist()
         for line in df:
-            json.dump(ast.literal_eval(line), f)
-            f.write('\n')
+            try:
+                json.dump(eval(line), f)
+                f.write('\n')
+            except:
+                pass
     df = pd.read_json('shopee.json', lines = True)
     df = df.drop_duplicates(subset=['itemid'])
     threads = []
@@ -85,9 +88,9 @@ def crawlShopee():
             except Exception as e:
                 print(e)
     shopee = df[df['description'].notnull()]
-    shopee.to_csv('shopee.csv', index = False)
+    shopee.to_csv('/opt/airflow/dags/shopee.csv', index = False)
     old = df[df['description'].isnull()]
-    old.to_csv('old.csv', index = False)
+    old.to_csv('/opt/airflow/dags/old.csv', index = False)
     os.remove('shopee.json')
     sys.stdout.write('\r Crawler took %.2f seconds' %(time.time()-start))
 
