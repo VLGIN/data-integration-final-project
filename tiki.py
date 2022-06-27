@@ -18,15 +18,13 @@ def get_detail_tiki(url, idx):
     try:
         headers = {'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_10_1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/39.0.2171.95 Safari/537.36'}
         r = requests.get(url, headers = headers)
-        spec = r.json()['specifications']
-        description = r.json()['description']
+        spec = r.json()['specifications'][0]['attributes']
         time.sleep(2)
         
     except Exception as e:
         print(e)
         spec = 'None'
-        description = 'None'
-    return spec, description, idx
+    return spec, idx
 
 def crawlTiki():
     threads = []
@@ -52,7 +50,7 @@ def crawlTiki():
 
         df = pd.read_json('tiki.json', lines= True)
         
-
+        df = df[['price','id']]
         threads = []
         with ThreadPoolExecutor(max_workers=20) as executor:
             length_product = len(df)
@@ -65,11 +63,23 @@ def crawlTiki():
                 threads.append(executor.submit(get_detail_tiki, url, row))
 
             for task in as_completed(threads):
-                spec, description, row = task.result()
-                df.loc[row, 'description'] = str(description)
-                df.loc[row, 'specifications'] = str(spec)
-                sys.stdout.write('\rLoading... %.2f percent' %(100*row/length_product))                
+                spec, row = task.result()
+                if spec is not None:
+                    try:
+                        temp =  pd.DataFrame(spec)
 
+                        names = temp['name']
+                        values = temp['value']
+
+                        s = {name:value for name, value in zip(names,values)}
+                        temp = pd.DataFrame(s, index = [0])
+                        for col in temp.columns:
+                            df.loc[row, col] = temp.loc[0, col]
+                        # df.loc[row, 'specifications'] = str(spec)
+                    except:
+                        pass
+                sys.stdout.write('\rLoading... %.2f percent' %(100*row/length_product))                
+        df = df.dropna(axis = 1, thresh = int(len(df)*0.5))
         df.to_csv('tiki.csv', index = False)
         os.remove('tiki.json')
         sys.stdout.write('\rCrawler took %.2f seconds' %(time.time()-start))
