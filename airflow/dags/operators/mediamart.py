@@ -32,10 +32,10 @@ def crawl_mediaMart():
     except:
       pass
   data=[]
-  if os.path.exists('/opt/airflow/dags/mediamart.csv'):
-    df = pd.read_csv('mediamart.csv') #duong dan file csv
-  else:
-    df = None
+  # if os.path.exists('/opt/airflow/dags/mediamart.csv'):
+  #   df = pd.read_csv('mediamart.csv') #duong dan file csv
+  # else:
+  #   df = None
   url = 'https://mediamart.vn/smartphones'
   headers = {
     'User-Agent': 'Mozilla/5.0 (X11; Linux x86_64; rv:73.0) Gecko/20100101 Firefox/73.0',
@@ -45,10 +45,10 @@ def crawl_mediaMart():
   soup = BeautifulSoup(r.content, 'html.parser')
   for div in soup.find_all("div", class_="col-6 col-md-3 col-lg-3"):
     data.append(crawl_item(div.find("a", href=True)['href']))
-  if df == None:
-    df = pd.DataFrame(data)
-  else:
-    df = pd.concat([pd.DataFrame(data), df], ignore_index=True)
+  # if df == None:
+  #   df = pd.DataFrame(data)
+  # else:
+  #   df = pd.concat([pd.DataFrame(data), df], ignore_index=True)
+  df = pd.DataFrame(data)
   df.to_csv('/opt/airflow/dags/mediamart.csv')
   print("Save to file")
-  return df

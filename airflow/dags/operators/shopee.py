@@ -1,6 +1,3 @@
-
-
-    
 def crawlShopee():
     from pydoc import describe
     import requests
@@ -9,8 +6,10 @@ def crawlShopee():
     from concurrent.futures import ThreadPoolExecutor, as_completed
     import json
     import os
+    import ast
     # from api import call_shopee_api, get_detail_shopee
     import sys
+    
     def call_shopee_api(url):
         r = requests.get(url).json()
         time.sleep(3)
@@ -19,7 +18,7 @@ def crawlShopee():
     def get_detail_shopee(url, idx):
         try:
             r = requests.get(url)
-            r = r.json()['data']['description']
+            r = r.json()['data']['attributes']
             time.sleep(2)
         except:
             # print('bị chặn')
@@ -61,13 +60,14 @@ def crawlShopee():
         df = pd.read_csv('shopee.csv')['item_basic'].tolist()
         for line in df:
             try:
-                json.dump(eval(line), f)
+                json.dump(ast.literal_eval(line), f)
                 f.write('\n')
             except:
                 pass
     df = pd.read_json('shopee.json', lines = True)
     df = df.drop_duplicates(subset=['itemid'])
     threads = []
+    df = df[['itemid','shopid','price']]
     with ThreadPoolExecutor(max_workers=20) as executor:
         length_product = len(df)
         for row in range(length_product):
@@ -81,16 +81,27 @@ def crawlShopee():
 
         for task in as_completed(threads):
             try:
-                description, row = task.result()
+                attributes, row = task.result()
                 sys.stdout.write('\rLoading... %.2f percent' %(100*row/length_product))
-                if description is not None:
-                    df.loc[row, 'description'] = str(description.splitlines())
+                if attributes is not None:
+                    df.loc[row,'attributes'] = str(attributes)
+                    temp = pd.DataFrame(attributes)
+                    # print(temp.columns)
+                    names = temp['name']
+                    values = temp['value']
+                    s = {name: value for name, value in zip(names, values)}
+                    temp = pd.DataFrame(s, index = [0])
+                    for col in temp.columns:
+                        df.loc[row, col] = temp.loc[0, col]
             except Exception as e:
                 print(e)
-    shopee = df[df['description'].notnull()]
-    shopee.to_csv('/opt/airflow/dags/shopee.csv', index = False)
-    old = df[df['description'].isnull()]
-    old.to_csv('/opt/airflow/dags/old.csv', index = False)
+    shopee = df[df['attributes'].notnull()]
+    shopee = shopee.drop('attributes', axis = 1)
+    shopee = shopee.dropna(thresh = int(len(shopee.columns)*0.8))
+    old = df[df['attributes'].isnull()]
+    old = old.drop('attributes', axis = 1)
+    shopee.to_csv('shopee.csv', index = False)
+    old.to_csv('old.csv', index = False)
     os.remove('shopee.json')
     sys.stdout.write('\r Crawler took %.2f seconds' %(time.time()-start))
 

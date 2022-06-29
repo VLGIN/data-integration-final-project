@@ -51,11 +51,11 @@ with DAG(
             python_callable=crawlTiki
         )
 
-        sendo_task = PythonVirtualenvOperator(
-            task_id="sendo",
-            requirements=requirements_venv,
-            python_callable=crawlSendo
-        )
+        # sendo_task = PythonVirtualenvOperator(
+        #     task_id="sendo",
+        #     requirements=requirements_venv,
+        #     python_callable=crawlSendo
+        # )
 
         mediamart_task = PythonVirtualenvOperator(
             task_id="mediamart",
