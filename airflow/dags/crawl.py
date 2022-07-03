@@ -22,7 +22,8 @@ requirements=[
 
 requirements_venv = [
     "pandas",
-    "bs4"
+    "bs4",
+    "pymongo[srv]"
 ]
 
 args={
@@ -39,11 +40,11 @@ with DAG(
     schedule_interval="@daily"
 ) as dag:
     with TaskGroup(group_id="crawl") as tg1:
-        shopee_task = PythonVirtualenvOperator(
-            task_id="shopee",
-            requirements=requirements_venv,
-            python_callable=crawlShopee
-        )
+        # shopee_task = PythonVirtualenvOperator(
+        #     task_id="shopee",
+        #     requirements=requirements_venv,
+        #     python_callable=crawlShopee
+        # )
 
         tiki_task = PythonVirtualenvOperator(
             task_id="tiki",
@@ -61,6 +62,12 @@ with DAG(
             task_id="mediamart",
             requirements=requirements_venv,
             python_callable=crawl_mediaMart
+        )
+
+        thegioididong_task = PythonVirtualenvOperator(
+            task_id="thegioididong",
+            requirements=requirements_venv,
+            python_callable=crawlTGDD
         )
 
     # clean_task = PythonVirtualenvOperator(
