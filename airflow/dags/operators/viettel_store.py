@@ -118,9 +118,12 @@ def crawl_ViettelStore():
             writer.writerow([name, new_price, cong_nghe_man_hinh, camera_sau, camera_truoc, chip_set, ram, bo_nho_trong,
                              pin, loai_sim, hdh])
 
-    for i in range(4):
-        show_more_product(driver)
-        time.sleep(2)
+    for i in range(10):
+        try:
+            show_more_product(driver)
+            time.sleep(2)
+        except:
+            pass
 
     links = get_product_link(driver)
 

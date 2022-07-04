@@ -9,7 +9,7 @@ def crawlTGDD():
 
     data_phones = []
 
-    Devices = ["apple-iphone", "samsung", "oppo", "xiaomi", "vivo", "realme", "nokia", "itel", "masstel"]
+    Devices = ["apple-iphone", "samsung", "oppo", "xiaomi", "vivo", "realme", "nokia", "itel", "mobell", "masstel"]
     ID = 1
     for i in range(len(Devices)):
         URL = 'https://www.thegioididong.com/dtdd-' + Devices[i]
@@ -46,6 +46,7 @@ def crawlTGDD():
                 print('priceValidUntil :', data2)
 
                 item = {}
+                item["Thương hiệu"] = Devices[i]
                 item['Name'] = name
                 item['Price'] = data1
                 item['priceValidUntil'] = data2
@@ -70,4 +71,4 @@ def crawlTGDD():
     #df.to_csv("data_phones.csv", encoding="utf-8")
 
 if __name__ == "__main__":
-    crawl()
+    crawlTGDD()
