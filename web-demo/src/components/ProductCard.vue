@@ -6,9 +6,6 @@
 </template>
 
 <script setup>
-import { defineProps } from 'vue';
-
-
 const props = defineProps({
   image: {
     type: String,
@@ -19,8 +16,9 @@ const props = defineProps({
 
 <style lang="scss" scoped>
 .product-card {
-  width: 250px;
+  width: 200px;
   height: 300px;
+  border-radius: 8px;
 
   &__image {
     max-width: 100%;

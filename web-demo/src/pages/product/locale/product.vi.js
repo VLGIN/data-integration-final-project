@@ -1,7 +1,9 @@
 export const product = {
   heading: {
     title: 'Product Data',
-    searchBar: 'Enter product name',
-    export: 'Export',
+    search: {
+      placeholder: 'Enter product name',
+      button: 'Search'
+    }
   },
 };

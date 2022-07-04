@@ -19,22 +19,20 @@ import { useHomeStore } from '../store';
 const { t } = useI18n();
 const homeStore = useHomeStore();
 
-const filterOptions = [
-  {
-    label: 'Gia cao nhat'
+const props = defineProps({
+  filterOptions: {
+    type: Object,
+    required: true,
   },
-  {
-    label: 'Gia thap nhat'
-  }
-]
+})
 
-const currentOption = ref(filterOptions[0].label);
+
+
+const currentOption = ref(props.filterOptions[0].label);
 
 const chooseOption = (option) => {
   currentOption.value = option.label;
-
-  homeStore.chartData.data.labels = ['fas', 'as', 'fsad', 'fsda', 'fsda', 'fsad', 'fsda'];
-
+  homeStore.getData(option.query);
 }
 </script>
 
@@ -46,6 +44,8 @@ const chooseOption = (option) => {
   box-sizing: border-box;
   padding-top: 16px;
   padding-bottom: 16px;
+  background-color: $color-light-grey;
+  margin-bottom: 20px;
   border-radius: 4px;
   border: 1px solid $color-grey-1;
 }

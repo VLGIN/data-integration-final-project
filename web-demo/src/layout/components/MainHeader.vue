@@ -64,7 +64,6 @@ const navigations = [
 
 .container-fuild {
   background-color: $color-white;
-  box-shadow: 0 2px 2px $color-grey-1;
 }
 
 .main-header {

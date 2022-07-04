@@ -17,8 +17,7 @@ const { t } = useI18n();
 .heading-bar {
   display: flex;
   justify-content: space-between;
-  padding-top: 25px;
-  padding-bottom: 25px;
+  margin-bottom: 25px;
 
   &__title {
     font-size: 24px;

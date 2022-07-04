@@ -1,23 +1,36 @@
+import { axiosInstance } from '@/plugins/axios';
 import { defineStore } from 'pinia';
 import { getRandomColorList } from '@/common/helper';
 
 export const useHomeStore = defineStore('home', {
   state: () => ({
-    chartData: {},
+    barChartData: {},
+    lineChartData: {},
   }),
   actions: {
-    async getData() {
-      const data = [65, 59, 80, 81, 56, 55, 40];
-      const labels = ['1', '2', '3', '4', '5', '6', '7'];
-      this.setChartData('Overview Data', data, labels);
+    async getData(query) {
+      try {
+        console.log(query);
+        // const response = await axiosInstance.get(`/chart?${query}`);
+
+        const type = 'bar';
+        const unit = 'Averagage Price (vnd)';
+        const data = [7402500, 3214213, 5321421, 5452211, 2393931];
+        const labels = ['Thegioididong', 'Shopee', 'Sendo', 'Mediamart', 'Lazada'];
+
+        this.setChartData(type, unit, data, labels);
+      } catch (error) {
+        return error.response.data.message;
+      }
     },
 
-    setChartData(title, data, labels) {
+    setChartData(type, title, data, labels) {
       if (data.length !== labels.length) {
         return;
       }
-      this.chartData = {
-        type: 'bar',
+      /* fake data */
+      const chartData = {
+        type: type,
         data: {
           labels,
           datasets: [
@@ -30,9 +43,21 @@ export const useHomeStore = defineStore('home', {
         },
         options: {
           responsive: true,
-          // maintainAspectRatio: false,
+          maintainAspectRatio: true,
         },
       };
+
+      switch (type) {
+        case 'bar':
+          this.barChartData = chartData;
+          break;
+        case 'line':
+          this.barChartData = chartData;
+          break;
+        case 'doughnut':
+          this.barChartData = chartData;
+          break;
+      }
     },
   },
 });

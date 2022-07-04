@@ -1,4 +1,4 @@
-import axios from '@/plugins/axios';
+import { axiosInstance } from '@/plugins/axios';
 
 class HomeApiService {}
 

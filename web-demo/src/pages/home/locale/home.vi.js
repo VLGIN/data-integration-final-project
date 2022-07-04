@@ -3,6 +3,12 @@ export const home = {
     title: 'Data overview',
   },
   filter: {
-    title: 'RULES',
+    title: 'CRITERIA',
+  },
+  barChart: {
+    options: [
+      
+    ],
+    lengthOptions: '3',
   },
 };

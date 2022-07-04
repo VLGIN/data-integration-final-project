@@ -4,14 +4,11 @@
       {{ t('product.heading.title') }}
     </div>
     <div class="heading-bar__right-content">
-      <el-input class="search-bar" v-model="keyword" :prefix-icon="Search" :placeholder="t('product.heading.searchBar')"
-        @keyup.enter="searchProduct">
+      <el-input class="search-bar" v-model="keyword" :prefix-icon="Search"
+        :placeholder="t('product.heading.search.placeholder')">
       </el-input>
-      <el-button class="button-export" :prefix="Search">
-        <el-icon class="el-icon--left">
-          <Download />
-        </el-icon>
-        {{ t('product.heading.export') }}
+      <el-button type="primary" class="button-export" @click="searchProduct">
+        {{ t('product.heading.search.button') }}
       </el-button>
     </div>
   </div>
@@ -20,7 +17,7 @@
 <script setup>
 import { ref } from 'vue';
 import { useI18n } from 'vue-i18n';
-import { Search, Download } from '@element-plus/icons-vue';
+import { Search } from '@element-plus/icons-vue';
 
 const { t } = useI18n();
 
@@ -38,8 +35,8 @@ const searchProduct = () => {
 .heading-bar {
   display: flex;
   justify-content: space-between;
-  padding-top: 25px;
-  padding-bottom: 25px;
+  margin-bottom: 25px;
+  // border-bottom: 1px solid $color-grey;
 
   &__title {
     font-size: 24px;
