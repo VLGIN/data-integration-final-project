@@ -51,7 +51,7 @@ def crawl_mediaMart():
 
   data_dict = df.to_dict('records')
   client = MongoClient("mongodb+srv://longgiang:longgiang2010@cluster0.npw0zsg.mongodb.net/")
-  db = client["data-integration"]
+  db = client["debug-data-integration"]
   collec = db["mediamart"]
 
   collec.insert_many(data_dict)

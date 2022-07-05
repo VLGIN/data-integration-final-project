@@ -55,7 +55,7 @@ def crawlPhongVu():
     df = pd.DataFrame(final_data)
     print(df)
     client = MongoClient("mongodb+srv://longgiang:longgiang2010@cluster0.npw0zsg.mongodb.net/")
-    db = client["data-integration"]
+    db = client["debug-data-integration"]
     collec = db["phongvu"]
 
     df["date"] = [str(date.today())] * df.shape[0]

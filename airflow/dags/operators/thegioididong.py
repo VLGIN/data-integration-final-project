@@ -61,7 +61,7 @@ def crawlTGDD():
     df = pd.DataFrame.from_dict(data_phones)
 
     client = MongoClient("mongodb+srv://longgiang:longgiang2010@cluster0.npw0zsg.mongodb.net/")
-    db = client["data-integration"]
+    db = client["debug-data-integration"]
     collec = db["thegioididong"]
 
     df["date"] = [str(date.today())]*df.shape[0]

@@ -40,24 +40,6 @@ with DAG(
     schedule_interval="@daily"
 ) as dag:
     with TaskGroup(group_id="crawl") as tg1:
-        # shopee_task = PythonVirtualenvOperator(
-        #     task_id="shopee",
-        #     requirements=requirements_venv,
-        #     python_callable=crawlShopee
-        # )
-
-        tiki_task = PythonVirtualenvOperator(
-            task_id="tiki",
-            requirements=requirements_venv,
-            python_callable=crawlTiki
-        )
-
-        # sendo_task = PythonVirtualenvOperator(
-        #     task_id="sendo",
-        #     requirements=requirements_venv,
-        #     python_callable=crawlSendo
-        # )
-
         mediamart_task = PythonVirtualenvOperator(
             task_id="mediamart",
             requirements=requirements_venv,
@@ -68,6 +50,24 @@ with DAG(
             task_id="thegioididong",
             requirements=requirements_venv,
             python_callable=crawlTGDD
+        )
+
+        cellphones_task = PythonVirtualenvOperator(
+            task_id="cellphones",
+            requirements=requirements_venv,
+            python_callable=crawlCellphones
+        )
+
+        didongthongminh = PythonVirtualenvOperator(
+            task_id="didongthongminh",
+            requirements=requirements_venv,
+            python_callable=crawlDDTM
+        )
+
+        phongvu = PythonVirtualenvOperator(
+            task_id="phongvu",
+            requirements=requirements_venv,
+            python_callable=crawlPhongVu
         )
 
     # clean_task = PythonVirtualenvOperator(
