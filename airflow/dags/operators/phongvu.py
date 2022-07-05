@@ -4,7 +4,7 @@ def crawlPhongVu():
     import pandas as pd
     import time
     from pymongo import MongoClient
-    from datetime import date
+    from datetime import date, timedelta
 
     devices = ['iphone-scat.01-N004-01', 'samsung-scat.05-N001-02', 'asus-scat.05-N001-12',
                'xiaomi-scat.05-N001-17']
@@ -25,7 +25,7 @@ def crawlPhongVu():
         return_dict["price"] = detail["data"]["prices"][0]["latestPrice"]
         product_detail = detail["data"]["productDetail"]["attributeGroups"]
         for item in product_detail:
-            return_dict[item["name"]] = item["value"]
+            return_dict[item["name"].strip().lower()] = item["value"].strip().lower()
         return return_dict
 
     final_data = []
@@ -53,12 +53,14 @@ def crawlPhongVu():
             final_data.append(detail)
 
     df = pd.DataFrame(final_data)
+    df.rename(columns={"dung lượng (rom)": "bộ nhớ"}, inplace=True)
     print(df)
     client = MongoClient("mongodb+srv://longgiang:longgiang2010@cluster0.npw0zsg.mongodb.net/")
-    db = client["debug-data-integration"]
+    db = client["data-integration"]
     collec = db["phongvu"]
 
-    df["date"] = [str(date.today())] * df.shape[0]
+    date_save = date.today()
+    df["date"] = [str(date_save)] * df.shape[0]
     df.reset_index(inplace=True)
     data_dict = df.to_dict("records")
     collec.insert_many(data_dict)

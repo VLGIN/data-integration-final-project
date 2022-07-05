@@ -4,3 +4,6 @@ from .didongthongminh import *
 from .thegioididong import *
 from .phongvu import *
 from .utils import *
+from .preprocess import *
+from .schema_matching import *
+from .data_matching import *

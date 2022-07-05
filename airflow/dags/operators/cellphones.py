@@ -5,7 +5,7 @@ def crawlCellphones():
 
     from bs4 import BeautifulSoup
     from pymongo import MongoClient
-    from datetime import date
+    from datetime import date, timedelta
     from tqdm import tqdm
 
     base_url = "https://cellphones.com.vn/lapi/LoadMoreProductCate/index/?page={" \
@@ -30,12 +30,12 @@ def crawlCellphones():
         tr_list = technical_detail.find_all("tr")
         for tr in tr_list:
             th_list = tr.find_all("th")
-            detail[str(th_list[0])[4:-5]] = str(th_list[1])[4:-5]
+            detail[th_list[0].text.strip().lower()] = th_list[1].text.strip().lower()
         return detail
 
     urls = []
 
-    for i in tqdm(range(3)):
+    for i in tqdm(range(8)):
         try:
             url = base_url.format(i)
             headers = {
@@ -54,12 +54,13 @@ def crawlCellphones():
         product_detail.append(detail)
 
     df = pd.DataFrame(product_detail)
-    print(df)
+    df.rename(columns={"dung lượng ram": "ram", "bộ nhớ trong": "bộ nhớ"}, inplace=True)
     client = MongoClient("mongodb+srv://longgiang:longgiang2010@cluster0.npw0zsg.mongodb.net/")
-    db = client["debug-data-integration"]
+    db = client["data-integration"]
     collec = db["cellphones"]
 
-    df["date"] = [str(date.today())] * df.shape[0]
+    date_save = date.today()
+    df["date"] = [str(date_save)] * df.shape[0]
     df.reset_index(inplace=True)
     data_dict = df.to_dict("records")
     collec.insert_many(data_dict)

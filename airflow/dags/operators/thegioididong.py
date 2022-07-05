@@ -5,7 +5,7 @@ def crawlTGDD():
     import pandas as pd
     import pymongo
     from pymongo import MongoClient
-    from datetime import date
+    from datetime import date, timedelta
 
     data_phones = []
 
@@ -47,8 +47,8 @@ def crawlTGDD():
 
                 item = {}
                 item["Thương hiệu"] = Devices[i]
-                item['Name'] = name
-                item['Price'] = data1
+                item['name'] = name
+                item['price'] = data1
                 item['priceValidUntil'] = data2
 
                 for entry in data:
@@ -59,12 +59,14 @@ def crawlTGDD():
             except:
                 pass
     df = pd.DataFrame.from_dict(data_phones)
+    df.rename(columns={"Bộ nhớ trong": "Bộ nhớ"}, inplace=True)
 
     client = MongoClient("mongodb+srv://longgiang:longgiang2010@cluster0.npw0zsg.mongodb.net/")
-    db = client["debug-data-integration"]
+    db = client["data-integration"]
     collec = db["thegioididong"]
 
-    df["date"] = [str(date.today())]*df.shape[0]
+    date_save = date.today()
+    df["date"] = [str(date_save)] * df.shape[0]
     df.reset_index(inplace=True)
     data_dict = df.to_dict("records")
     collec.insert_many(data_dict)

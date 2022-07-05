@@ -5,7 +5,7 @@ def crawlDDTM():
 
     from bs4 import BeautifulSoup
     from pymongo import MongoClient
-    from datetime import date
+    from datetime import date, timedelta
     from tqdm import tqdm
 
     base_url = "https://didongthongminh.vn/index.php?module=products&view=cat&task=fetch_pages&raw=1&pagecurrent={}&filter=&cid=1&order="
@@ -34,7 +34,7 @@ def crawlDDTM():
                     try:
                         td_list = tr.find_all("td")
                         print(td_list[0].text)
-                        detail[td_list[0].text] = td_list[1].text
+                        detail[td_list[0].text.strip().lower()] = td_list[1].text.strip().lower()
                     except:
                         pass
             else:
@@ -42,8 +42,8 @@ def crawlDDTM():
                 tr_list = technical_detail.find_all("tr")
                 for tr in tr_list:
                     try:
-                        th = tr.find("th").text
-                        td = tr.find("p").text
+                        th = tr.find("th").text.strip().lower()
+                        td = tr.find("p").text.strip().lower()
                         detail[th] = td
                     except:
                         pass
@@ -53,7 +53,7 @@ def crawlDDTM():
 
     urls = []
 
-    for i in range(50):
+    for i in range(7):
         try:
             url = base_url.format(i*25)
             headers = {
@@ -76,12 +76,14 @@ def crawlDDTM():
             product_detail.append(detail)
 
     df = pd.DataFrame(product_detail)
+    df.rename(columns={"bộ nhớ trong": "bộ nhớ"}, inplace=True)
     print(df)
     client = MongoClient("mongodb+srv://longgiang:longgiang2010@cluster0.npw0zsg.mongodb.net/")
-    db = client["debug-data-integration"]
+    db = client["data-integration"]
     collec = db["didongthongminh"]
 
-    df["date"] = [str(date.today())] * df.shape[0]
+    date_save = date.today()
+    df["date"] = [str(date_save)] * df.shape[0]
     df.reset_index(inplace=True)
     data_dict = df.to_dict("records")
     collec.insert_many(data_dict)
