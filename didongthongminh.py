@@ -14,21 +14,39 @@ def crawlCellphones():
         headers = {
             "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/88.0.4324.182 Safari/537.36"}
         webpage = requests.get(url, headers=headers).text
-        time.sleep(0.5)
+        time.sleep(0.3)
         soup = BeautifulSoup(webpage, 'html.parser')
-        technical_detail = soup.find("table", {"class": "charactestic_table_detail"})
-        detail = {}
-        try:
 
-            tr_list = technical_detail.find_all("tr", {"class": True})
-            for tr in tr_list:
-                try:
-                    td_list = tr.find_all("td")
-                    print(td_list[0].text)
-                    detail[td_list[0].text] = td_list[1].text
-                except:
-                    detail= {}
-                    pass
+        price_tag = soup.find("p", {"class": "top_prd"})
+        if price_tag is None:
+            price_tag = soup.find("div", {"class": "mid_sale"})
+
+        name_tag = soup.find("div", {"class": "_rowtop clearfix"})
+        name = name_tag.find("h1").text
+        price = price_tag.find("span", {"class": "_price"}).text
+        detail = {"price": price,
+                    "name": name}
+        try:
+            technical_detail = soup.find("table", {"class": "charactestic_table_detail"})
+            if technical_detail is not None:
+                tr_list = technical_detail.find_all("tr", {"class": True})
+                for tr in tr_list:
+                    try:
+                        td_list = tr.find_all("td")
+                        print(td_list[0].text)
+                        detail[td_list[0].text] = td_list[1].text
+                    except:
+                        pass
+            else:
+                technical_detail = soup.find("table", {"class": "shop_attributes"})
+                tr_list = technical_detail.find_all("tr")
+                for tr in tr_list:
+                    try:
+                        th = tr.find("th").text
+                        td = tr.find("p").text
+                        detail[th] = td
+                    except:
+                        pass
         except:
             pass
         return detail

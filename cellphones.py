@@ -22,8 +22,16 @@ def crawlCellphones():
         webpage = requests.get(url, headers=headers).text
         time.sleep(0.5)
         soup = BeautifulSoup(webpage, 'html.parser')
+        try:
+            price_tag = soup.find("div", {"class": "box-info__box-price"})
+            price = price_tag.find("p", {"class": "special-price"}).text
+        except:
+            return {}
+        name_tag = soup.find("div", {"class": "box-name__box-product-name"})
+        name = name_tag.find("h1").text
         technical_detail = soup.find("div", {"id": "technicalInfoModal"})
-        detail = {}
+        detail = {"price": price,
+            "name": name}
         tr_list = technical_detail.find_all("tr")
         for tr in tr_list:
             th_list = tr.find_all("th")
@@ -32,7 +40,7 @@ def crawlCellphones():
 
     urls = []
 
-    for i in range(200):
+    for i in tqdm(range(200)):
         try:
             url = base_url.format(i)
             headers = {
