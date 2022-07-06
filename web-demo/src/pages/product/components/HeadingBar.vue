@@ -4,7 +4,7 @@
       {{ t('product.heading.title') }}
     </div>
     <div class="heading-bar__right-content">
-      <el-input class="search-bar" v-model="keyword" :prefix-icon="Search"
+      <el-input class="search-bar" v-model="keyword" :prefix-icon="Search" @keyup.enter="searchProduct"
         :placeholder="t('product.heading.search.placeholder')">
       </el-input>
       <el-button type="primary" class="button-export" @click="searchProduct">
@@ -18,16 +18,20 @@
 import { ref } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { Search } from '@element-plus/icons-vue';
+import { useProductStore } from '../store';
+
+
+const productStore = useProductStore();
 
 const { t } = useI18n();
 
 const keyword = ref('');
 
-const searchProduct = () => {
-  if (keyword.value.trim() === '') {
-    return;
-  }
+const searchProduct = async () => {
+  // if (keyword.value.trim() === '') {
   console.log(keyword.value);
+  await productStore.getProductsByKeyword(keyword.value);
+  // }
 } 
 </script>
 
