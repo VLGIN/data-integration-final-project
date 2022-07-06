@@ -30,7 +30,6 @@ def clean_data():
         tex = re.sub("di động", "", tex)
         tex = re.sub("điện thoại", "", tex)
 
-
         for item in brand_name:
             tex = re.sub(item, "", tex)
         for item in distraction:
@@ -79,6 +78,15 @@ def clean_data():
     client = MongoClient("mongodb+srv://longgiang:longgiang2010@cluster0.npw0zsg.mongodb.net/")
     db = client["data-integration"]
 
+    def extract_color(sent):
+        with open("data/color") as f:
+            color = f.read().splitlines()
+        sent = sent.lower()
+        for item in color:
+            if item in sent:
+                return item
+        return None
+
     for item in coll:
         collec = db[item]
         data = collec.find()
@@ -86,7 +94,12 @@ def clean_data():
         df = pd.DataFrame(list(data)).drop(["_id", "index"], axis=1)
 
         df = preprocess(df)
+
+        if item == "mediamart":
+            color = df["name"].apply(extract_color)
+        df["color"] = color
         df.to_csv(f'/opt/airflow/dags/data/{item}.csv')
+
 
 if __name__ == "__main__":
     clean_data()

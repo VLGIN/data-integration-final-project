@@ -51,7 +51,11 @@ def crawlTGDD():
                 item['price'] = data1
                 item['priceValidUntil'] = data2
                 item["url"] = URL
-
+                try:
+                    item["color"] = soup.find("div", {"class": "box03 color group desk"}).find("a", {"class": "box03__item item act"}).text
+                except:
+                    item["color"] = None
+                item["img_url"] = None
                 for entry in data:
                     print(entry['name'], ':', entry['value'])
                     item[entry['name']] = entry['value']

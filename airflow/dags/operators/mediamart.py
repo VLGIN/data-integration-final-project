@@ -18,6 +18,10 @@ def crawl_mediaMart():
             data = {}
             soup = BeautifulSoup(r.content.decode('utf-8', 'ignore'), 'html.parser')
             data["name"] = soup.find_all("div", class_="pdetail-name")[0].text.split('\n')[1]
+            try:
+                data["img_url"] = soup.find("div", {"class": "pdetail-slideproduct owl-loaded owl-drag"}).find("img").src
+            except:
+                data["img_url"] = None
             x = 0
             key = ''
             for tr in soup.find_all('td'):
