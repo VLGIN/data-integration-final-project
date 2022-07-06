@@ -9,11 +9,12 @@ def crawlCellphones():
     from tqdm import tqdm
 
     base_url = "https://cellphones.com.vn/lapi/LoadMoreProductCate/index/?page={" \
-                "}&id=3&order=view_count2&dir=desc&fearture=flashsale_samsung "
+               "}&id=3&order=view_count2&dir=desc&fearture=flashsale_samsung "
 
     def get_detail(url):
         headers = {
-            "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/88.0.4324.182 Safari/537.36"}
+            "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/88."
+                          "0.4324.182 Safari/537.36"}
         webpage = requests.get(url, headers=headers).text
         time.sleep(0.5)
         soup = BeautifulSoup(webpage, 'html.parser')
@@ -25,12 +26,28 @@ def crawlCellphones():
         name_tag = soup.find("div", {"class": "box-name__box-product-name"})
         name = name_tag.find("h1").text
         technical_detail = soup.find("div", {"id": "technicalInfoModal"})
+        img_container = soup.find("div", {"class": "box-ksp"})
+        img_url = img_container.find("img").src
         detail = {"price": price,
-            "name": name}
+                  "name": name,
+                  "img_url": img_url}
         tr_list = technical_detail.find_all("tr")
         for tr in tr_list:
             th_list = tr.find_all("th")
             detail[th_list[0].text.strip().lower()] = th_list[1].text.strip().lower()
+            detail["url"] = url
+
+        color_options = soup.find("ul", {"class":"configurable_swatch_color"})
+        if color_options is not None:
+            detail_list = []
+            options = color_options.find_all("li")
+            for each in options:
+                content = each.find("p")
+                detail["color"] = content.find("strong").text.strip().replace("\n", "")
+                detail["price"] = content.find("span").text
+                detail["img_url"] = content.find("img").src
+            detail_list.append(detail.copy())
+            return detail_list
         return detail
 
     urls = []
@@ -39,7 +56,8 @@ def crawlCellphones():
         try:
             url = base_url.format(i)
             headers = {
-                "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/88.0.4324.182 Safari/537.36"}
+                "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome"
+                              "/88.0.4324.182 Safari/537.36"}
             product_list = requests.get(url, headers=headers).json()
             time.sleep(0.5)
 
@@ -51,7 +69,10 @@ def crawlCellphones():
 
     for url in tqdm(urls):
         detail = get_detail(url)
-        product_detail.append(detail)
+        if isinstance(detail, list):
+            product_detail += detail
+        else:
+            product_detail.append(detail)
 
     df = pd.DataFrame(product_detail)
     df.rename(columns={"dung lượng ram": "ram", "bộ nhớ trong": "bộ nhớ"}, inplace=True)

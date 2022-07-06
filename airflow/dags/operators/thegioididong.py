@@ -50,6 +50,7 @@ def crawlTGDD():
                 item['name'] = name
                 item['price'] = data1
                 item['priceValidUntil'] = data2
+                item["url"] = URL
 
                 for entry in data:
                     print(entry['name'], ':', entry['value'])

@@ -8,11 +8,13 @@ def crawlDDTM():
     from datetime import date, timedelta
     from tqdm import tqdm
 
-    base_url = "https://didongthongminh.vn/index.php?module=products&view=cat&task=fetch_pages&raw=1&pagecurrent={}&filter=&cid=1&order="
+    base_url = "https://didongthongminh.vn/index.php?module=products&view=cat&task=fetch_pages&raw=" \
+               "1&pagecurrent={}&filter=&cid=1&order="
 
     def get_detail(url):
         headers = {
-            "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/88.0.4324.182 Safari/537.36"}
+            "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko)"
+                          " Chrome/88.0.4324.182 Safari/537.36"}
         webpage = requests.get(url, headers=headers).text
         time.sleep(0.3)
         soup = BeautifulSoup(webpage, 'html.parser')
@@ -24,8 +26,11 @@ def crawlDDTM():
         name_tag = soup.find("div", {"class": "_rowtop clearfix"})
         name = name_tag.find("h1").text
         price = price_tag.find("span", {"class": "_price"}).text
+        img_url = soup.find("li", {"class": "color_hide color_rm type-10629 lslide active"}).find("img").src
         detail = {"price": price,
-                    "name": name}
+                  "name": name,
+                  "img_url": img_url,
+                  "url": url}
         try:
             technical_detail = soup.find("table", {"class": "charactestic_table_detail"})
             if technical_detail is not None:
@@ -49,7 +54,22 @@ def crawlDDTM():
                         pass
         except:
             pass
-        return detail
+
+        product_type = soup.find("div", {"class": "products_type"})
+        if product_type is not None:
+            types = product_type.find("div")
+            detail_list = []
+            for each in types:
+                img_url = each.find("img").src
+                detail_type = each.find("p").find_all("span")
+                color = detail_type[0].text
+                price = detail_type[1].text
+                detail["img_url"] = img_url
+                detail["price"] = price
+                detail["color"] = color
+                detail_list.append(detail.copy())
+            return detail_list
+        return [detail]
 
     urls = []
 
@@ -57,7 +77,8 @@ def crawlDDTM():
         try:
             url = base_url.format(i*25)
             headers = {
-                "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/88.0.4324.182 Safari/537.36"}
+                "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/"
+                              "88.0.4324.182 Safari/537.36"}
             webpage = requests.get(url, headers=headers).json()['content']
             time.sleep(0.5)
             soup = BeautifulSoup(webpage, 'html.parser')
@@ -73,7 +94,7 @@ def crawlDDTM():
     for url in tqdm(urls):
         detail = get_detail(url)
         if len(list(detail.keys())) > 0:
-            product_detail.append(detail)
+            product_detail += detail
 
     df = pd.DataFrame(product_detail)
     df.rename(columns={"bộ nhớ trong": "bộ nhớ"}, inplace=True)

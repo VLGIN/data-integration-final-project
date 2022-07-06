@@ -13,7 +13,8 @@ def crawlPhongVu():
     def get_detail(sku):
         url = "https://public-setting.tekoapis.com/api/v1/sku-details?sku={}&terminalCode=phongvu&location=".format(sku)
         headers = {
-            "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/88.0.4324.182 Safari/537.36"}
+            "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/88."
+                          "0.4324.182 Safari/537.36"}
         detail = requests.get(url, headers=headers).json()
         time.sleep(0.5)
         productinfo = detail["data"]["productInfo"]
@@ -21,6 +22,8 @@ def crawlPhongVu():
             return {"error": True}
         return_dict = {}
         return_dict["name"] = productinfo["name"]
+        return_dict["img_url"] = productinfo["imageUrl"]
+        return_dict["url"] = f"https://phongvu.vn/{productinfo['canonical']}?sku={sku}"
         return_dict["Thương hiệu"] = productinfo["brand"]["name"]
         return_dict["price"] = detail["data"]["prices"][0]["latestPrice"]
         product_detail = detail["data"]["productDetail"]["attributeGroups"]
@@ -32,7 +35,8 @@ def crawlPhongVu():
     for i in range(len(devices)):
         url = "https://phongvu.vn/" + devices[i]
         headers = {
-            "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/88.0.4324.182 Safari/537.36"}
+            "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/88."
+                          "0.4324.182 Safari/537.36"}
         webpage = requests.get(url, headers=headers).text
         time.sleep(0.5)
         soup = BeautifulSoup(webpage, 'html.parser')

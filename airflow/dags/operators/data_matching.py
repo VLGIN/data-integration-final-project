@@ -65,7 +65,6 @@ def data_matching():
             clusters[f"cluster{len(list(clusters.keys()))}"] = cluster
     print(clusters)
 
-
     collec = db["data_matching"]
     for cluster in clusters.values():
         data = df.iloc[[int(item) for item in cluster]]
@@ -79,6 +78,7 @@ def data_matching():
             data.drop(["_id"], axis=1, inplace=True)
         data_dict = data.to_dict('records')
         collec.insert_one({data_dict[0]["name"]: data_dict})
+
 
 if __name__ == "__main__":
     data_matching()

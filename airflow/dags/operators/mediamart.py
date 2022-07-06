@@ -28,6 +28,7 @@ def crawl_mediaMart():
                         data[key] = tr.get_text()
                     x = x + 1
             data["price"] = soup.find("div", class_="pdetail-price-box").text
+            data["url"] = url
             time.sleep(10)
             return data
         except:
