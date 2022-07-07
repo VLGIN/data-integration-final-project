@@ -27,11 +27,15 @@ def data_matching():
                          "bộ nhớ",
                          threshold=0.8,
                          label="bộ nhớ")
+    compare_dupes.string("color",
+                         "color",
+                         threshold=0.8,
+                         label="color")
     dupe_features = compare_dupes.compute(dupe_candidate_links, df)
-    potential_dupes = dupe_features[dupe_features.sum(axis=1) == 3].reset_index()
-    potential_dupes['Score'] = potential_dupes.loc[:, 'name':'bộ nhớ'].sum(axis=1)
+    potential_dupes = dupe_features[dupe_features.sum(axis=1) == 4].reset_index()
+    potential_dupes['Score'] = potential_dupes.loc[:, 'name':'color'].sum(axis=1)
 
-    potential_dupes = potential_dupes.where(potential_dupes["Score"] > 2).dropna()
+    potential_dupes = potential_dupes.where(potential_dupes["Score"] == 4).dropna()
     level0 = list(potential_dupes["level_0"])
     level1 = list(potential_dupes["level_1"])
 
@@ -77,7 +81,14 @@ def data_matching():
         if "_id" in data:
             data.drop(["_id"], axis=1, inplace=True)
         data_dict = data.to_dict('records')
-        collec.insert_one({data_dict[0]["name"]: data_dict})
+        data_push = {
+            "name": data_dict[0]["name"],
+            "ram": data_dict[0]["ram"],
+            "bộ nhớ": data_dict[0]["bộ nhớ"],
+            "màu sắc": data_dict[0]["color"],
+            "data": data_dict
+        }
+        collec.insert_one(data_push)
 
 
 if __name__ == "__main__":

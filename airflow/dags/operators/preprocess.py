@@ -1,6 +1,7 @@
 def clean_data():
     import pandas as pd
     import re
+    import json
 
     from pymongo import MongoClient
 
@@ -38,10 +39,16 @@ def clean_data():
             tex = re.sub(item, "", tex)
         tex = re.sub(" +", " ", tex)
         tex = tex.strip()
-        if tex[-3:] == "vna":
-            tex = " ".join(tex.split(" ")[:-1])
+        # if tex[-3:] == "vna":
+        #     tex = " ".join(tex.split(" ")[:-1])
 
-        return tex
+        word_list = tex.split(" ")
+        if "vna" in word_list[-1] or "vn/a" in word_list[-1]:
+            del word_list[-1]
+        if word_list[-1] == "-":
+            del word_list[-1]
+
+        return " ".join(word_list)
 
     def process_text(tex):
         tex = str(tex)
@@ -78,14 +85,41 @@ def clean_data():
     client = MongoClient("mongodb+srv://longgiang:longgiang2010@cluster0.npw0zsg.mongodb.net/")
     db = client["data-integration"]
 
+    with open("/opt/airflow/dags/data/color") as f:
+        color_list = f.read().splitlines()
+
     def extract_color(sent):
-        with open("data/color") as f:
-            color = f.read().splitlines()
         sent = sent.lower()
-        for item in color:
+        for item in color_list:
             if item in sent:
                 return item
         return None
+
+    with open("/opt/airflow/dags/data/mapping_color.json") as f:
+        mapping_color = json.load(f)
+
+    reverse_mapping_color = {}
+    for item in mapping_color.items():
+        list_color = item[1]
+        for each in list_color:
+            reverse_mapping_color[each] = item[0]
+
+    def process_price(sen):
+        if isinstance(sen, str):
+            sen = re.sub("\n", "", sen)
+            sen = re.sub("\r", "", sen)
+            word_list = str.split(" ")
+            for word in word_list:
+                if any(char.isdigit() for char in word):
+                    return "".join([char for char in word if char.isdigit()])
+        return sen
+
+    def process_color(sen):
+        if isinstance(sen, str):
+            for item in reverse_mapping_color.keys():
+                if item in sen:
+                    return reverse_mapping_color[item]
+        return sen
 
     for item in coll:
         collec = db[item]
@@ -93,11 +127,12 @@ def clean_data():
 
         df = pd.DataFrame(list(data)).drop(["_id", "index"], axis=1)
 
-        df = preprocess(df)
-
         if item == "mediamart":
             color = df["name"].apply(extract_color)
-        df["color"] = color
+            df["color"] = color
+        df = preprocess(df)
+        df["color"] = df["color"].apply(process_color)
+        df["price"] = df["price"].apply(process_price)
         df.to_csv(f'/opt/airflow/dags/data/{item}.csv')
 
 

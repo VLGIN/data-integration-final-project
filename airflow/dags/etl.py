@@ -36,7 +36,7 @@ args={
 }
 
 with DAG(
-    dag_id="crawl",
+    dag_id="etl",
     catchup=False,
     tags=["crawl"],
     default_args=args,

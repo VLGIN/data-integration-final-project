@@ -39,7 +39,6 @@ def crawl_mediaMart():
             pass
 
     data = []
-    df = pd.read_csv('/opt/airflow/dags/mediamart.csv')  # duong dan file csv
     url = 'https://mediamart.vn/smartphones'
     headers = {
         'User-Agent': 'Mozilla/5.0 (X11; Linux x86_64; rv:73.0) Gecko/20100101 Firefox/73.0',
@@ -49,7 +48,8 @@ def crawl_mediaMart():
     soup = BeautifulSoup(r.content, 'html.parser')
     for div in soup.find_all("div", class_="col-6 col-md-3 col-lg-3"):
         data.append(crawl_item(div.find("a", href=True)['href']))
-    pd.concat([pd.DataFrame(data), df], ignore_index=True)
+
+    df = pd.DataFrame(data)
 
     date_save = date.today()
     df["date"] = [str(date_save)] * df.shape[0]

@@ -65,6 +65,7 @@ def crawlPhongVu():
 
     date_save = date.today()
     df["date"] = [str(date_save)] * df.shape[0]
+    df.rename(columns={"màu sắc": "color"}, inplace=True)
     df.reset_index(inplace=True)
     data_dict = df.to_dict("records")
     collec.insert_many(data_dict)

@@ -1,3 +1,6 @@
+import logging
+
+
 def crawlDDTM():
     import requests
     import time
@@ -26,7 +29,10 @@ def crawlDDTM():
         name_tag = soup.find("div", {"class": "_rowtop clearfix"})
         name = name_tag.find("h1").text
         price = price_tag.find("span", {"class": "_price"}).text
-        img_url = soup.find("li", {"class": "color_hide color_rm type-10629 lslide active"}).find("img").src
+        try:
+            img_url = soup.find("li", {"class": "lslide active"}).find("img").src
+        except:
+            img_url = None
         detail = {"price": price,
                   "name": name,
                   "img_url": img_url,
@@ -38,7 +44,6 @@ def crawlDDTM():
                 for tr in tr_list:
                     try:
                         td_list = tr.find_all("td")
-                        print(td_list[0].text)
                         detail[td_list[0].text.strip().lower()] = td_list[1].text.strip().lower()
                     except:
                         pass
@@ -57,10 +62,15 @@ def crawlDDTM():
 
         product_type = soup.find("div", {"class": "products_type"})
         if product_type is not None:
-            types = product_type.find("div")
+            types = product_type.find_all("div")
             detail_list = []
             for each in types:
-                img_url = each.find("img").src
+                print(each)
+                try:
+                    img_url = each.find("img").src
+                except:
+                    img_url = None
+
                 detail_type = each.find("p").find_all("span")
                 color = detail_type[0].text
                 price = detail_type[1].text
@@ -93,12 +103,10 @@ def crawlDDTM():
     urls = list(set(urls))
     for url in tqdm(urls):
         detail = get_detail(url)
-        if len(list(detail.keys())) > 0:
-            product_detail += detail
+        product_detail += detail
 
     df = pd.DataFrame(product_detail)
     df.rename(columns={"bộ nhớ trong": "bộ nhớ"}, inplace=True)
-    print(df)
     client = MongoClient("mongodb+srv://longgiang:longgiang2010@cluster0.npw0zsg.mongodb.net/")
     db = client["data-integration"]
     collec = db["didongthongminh"]
