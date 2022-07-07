@@ -1,0 +1,7 @@
+valentine
+apache-airflow
+pandas
+bs4
+pymongo
+pymongo[srv]
+tqdm
