@@ -1,5 +1,5 @@
 from fastapi import FastAPI
-from app.router import products
+from app.routers import products
 from fastapi.middleware.cors import CORSMiddleware
 
 
