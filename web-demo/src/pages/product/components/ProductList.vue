@@ -1,13 +1,9 @@
 <template>
-  {{ productList }}
   <div class="product-list container">
-    <ProductCard v-for="product in productStore.productsByKeyword" :key="product.source" :name="product['name']"
-      :source="product['source']" :ram="product['ram']" :rom="product['bộ nhớ']" :date="product['date']"
-      :price="product['price']" />
+    <ProductCard v-for="product in productStore.productsInCluster" :key="product.source" :product-url="product['url']"
+      :name="product['name']" :source="product['source']" :ram="product['ram']" :rom="product['bộ nhớ']"
+      :color="product['color']" :date="product['date']" :price="parsePrice(product['price'])" />
   </div>
-  <!-- <div class="pagination">
-    <el-pagination :background="true" :page-size="LIMIT_PRODUCT_IN_PAGE" layout="prev, pager, next" :total="100" />
-  </div> -->
 </template>
 
 <script setup>
@@ -15,6 +11,7 @@ import { watch, ref, reactive } from 'vue';
 import ProductCard from '@/components/ProductCard.vue';
 import { LIMIT_PRODUCT_IN_PAGE } from '../constants';
 import { useProductStore } from '../store';
+import { parsePrice } from '@/common/helper';
 
 const productStore = useProductStore();
 

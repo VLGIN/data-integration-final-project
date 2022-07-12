@@ -1,15 +1,18 @@
 <template>
-  <el-card class="product-card" :body-style="{ padding: '20px' }">
-    <img class="product-card__image" :src="phoneImage">
-    <div class="product-info">
-      <div class="name">{{ name }}</div>
-      <div class="price">{{ price }}</div>
-      <div class="ram">Ram: {{ ram }}</div>
-      <div class="rom">Bộ nhớ: {{ rom }}</div>
-      <div class="source">Nguồn: {{ source }}</div>
-      <div class="date">Date: {{ date }}</div>
-    </div>
-  </el-card>
+  <a :href="productUrl" class="router-link" target="_blank">
+    <el-card class="product-card" :body-style="{ padding: '20px' }">
+      <img class="product-card__image" :src="phoneImage">
+      <div class="product-info">
+        <div class="name">{{ name }}</div>
+        <div class="price">{{ price }}<sup>đ</sup></div>
+        <div class="ram">Ram: {{ ram }}</div>
+        <div class="rom">Bộ nhớ: {{ rom }}</div>
+        <div class="rom">Màu sắc: {{ color }}</div>
+        <div class="source">Nguồn: <span style="color: #D67F7A;">{{ source }}</span></div>
+        <div class="date">Date: {{ date }}</div>
+      </div>
+    </el-card>
+  </a>
 </template>
 
 <script setup>
@@ -20,16 +23,17 @@ const props = defineProps({
   //   type: String,
   //   // required: true,
   // },
+  productUrl: String,
   name: String,
   source: String,
   ram: String,
   rom: String,
+  color: String,
   date: String,
   price: String
 })
 
 const phoneImage = computed(() => {
-  console.log(props.name);
   if (props.name.includes('iphone')) {
     return 'https://cdn.tgdd.vn/comment/51789883/iphone-13-pro-max-gold-1-600x600-20220621154044.jpg';
   } else if (props.name.includes('galaxy')) {
@@ -44,11 +48,11 @@ const phoneImage = computed(() => {
 <style lang="scss" scoped>
 .product-card {
   width: 250px;
-  height: 470px;
   border-radius: 8px;
+  text-align: center;
 
   &__image {
-    max-width: 100%;
+    max-width: 80%;
     height: 100%;
     margin-bottom: 12px;
   }
@@ -58,18 +62,19 @@ const phoneImage = computed(() => {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 12px;
+  gap: 10px;
+  font-size: 15px;
+
   // text-align: center;
-}
+  .name {
+    font-size: 19px;
+    font-weight: 700;
+  }
 
-.name {
-  font-size: 20px;
-  font-weight: 700;
-}
-
-.price {
-  color: $color-red;
-  font-size: 18px;
-  font-weight: 500;
+  .price {
+    color: $color-red;
+    font-size: 17px;
+    font-weight: 500;
+  }
 }
 </style>

@@ -4,7 +4,6 @@
     <div class="list-chart">
       <BarChart />
       <LineChart />
-
     </div>
   </div>
 

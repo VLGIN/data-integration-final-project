@@ -7,3 +7,10 @@ export const getRandomColorList = (lengthList) => {
   }
   return listColor;
 };
+
+export const parsePrice = (price) => {
+  return new Intl.NumberFormat('it-IT', {
+    style: 'decimal',
+    currency: 'VND',
+  }).format(price);
+};

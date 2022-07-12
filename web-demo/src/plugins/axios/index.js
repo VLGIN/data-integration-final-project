@@ -5,6 +5,4 @@ const options = {
   responseType: 'json',
 };
 
-console.log(options);
-
 export const axiosInstance = axios.create(options);

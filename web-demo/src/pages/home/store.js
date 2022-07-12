@@ -10,7 +10,6 @@ export const useHomeStore = defineStore('home', {
   actions: {
     async getData(query) {
       try {
-        console.log(query);
         // const response = await axiosInstance.get(`/chart?${query}`);
 
         const type = 'bar';
