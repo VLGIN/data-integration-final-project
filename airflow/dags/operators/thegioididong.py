@@ -68,17 +68,18 @@ def crawlTGDD():
                 pass
     df = pd.DataFrame.from_dict(data_phones)
     df.rename(columns={"Bộ nhớ trong": "Bộ nhớ"}, inplace=True)
-
+    df.drop_duplicates(inplace=True)
     client = MongoClient("mongodb+srv://longgiang:longgiang2010@cluster0.npw0zsg.mongodb.net/")
-    db = client["data-integration"]
+    db = client["data-integration2"]
     collec = db["thegioididong"]
 
     date_save = date.today()
     df["date"] = [str(date_save)] * df.shape[0]
-    df.reset_index(inplace=True)
+    df.reset_index(drop=True, inplace=True)
     data_dict = df.to_dict("records")
     collec.insert_many(data_dict)
     #df.to_csv("data_phones.csv", encoding="utf-8")
+
 
 if __name__ == "__main__":
     crawlTGDD()

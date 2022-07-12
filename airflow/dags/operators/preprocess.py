@@ -4,6 +4,7 @@ def clean_data():
     import json
 
     from pymongo import MongoClient
+    from datetime import date, timedelta
 
     def process_name(tex):
         tex = str(tex)
@@ -80,10 +81,10 @@ def clean_data():
         df.rename(columns={item: str(item).strip().lower() for item in list(df)}, inplace=True)
         return df
 
-    coll = ["cellphones", "thegioididong", "didongthongminh", "mediamart", "phongvu"]
+    coll = ["cellphones", "thegioididong", "didongthongminh", "mediamart", "phongvu", "didongviet"]
 
     client = MongoClient("mongodb+srv://longgiang:longgiang2010@cluster0.npw0zsg.mongodb.net/")
-    db = client["data-integration"]
+    db = client["data-integration2"]
 
     with open("/opt/airflow/dags/data/color") as f:
         color_list = f.read().splitlines()
@@ -108,10 +109,17 @@ def clean_data():
         if isinstance(sen, str):
             sen = re.sub("\n", "", sen)
             sen = re.sub("\r", "", sen)
-            word_list = str.split(" ")
+            sen = re.sub(" +", " ", sen)
+            word_list = sen.split(" ")
             for word in word_list:
                 if any(char.isdigit() for char in word):
-                    return "".join([char for char in word if char.isdigit()])
+                    result = "".join([char for char in word if char.isdigit() or char == "."]).split(".")
+                    components = word.split(".")
+                    if len(components[-1]) < 3:
+                        new_word = "".join(components[:-1])
+                    else:
+                        new_word = word
+                    return "".join([char for char in new_word if char.isdigit()])
         return sen
 
     def process_color(sen):
@@ -123,9 +131,10 @@ def clean_data():
 
     for item in coll:
         collec = db[item]
-        data = collec.find()
+        date_save = date.today()
+        data = collec.find({"date": str(date_save)})
 
-        df = pd.DataFrame(list(data)).drop(["_id", "index"], axis=1)
+        df = pd.DataFrame(list(data)).drop(["_id"], axis=1)
 
         if item == "mediamart":
             color = df["name"].apply(extract_color)

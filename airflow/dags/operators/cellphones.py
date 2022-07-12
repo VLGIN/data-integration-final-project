@@ -16,7 +16,6 @@ def crawlCellphones():
             "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/88."
                           "0.4324.182 Safari/537.36"}
         webpage = requests.get(url, headers=headers).text
-        time.sleep(0.5)
         soup = BeautifulSoup(webpage, 'html.parser')
         try:
             price_tag = soup.find("div", {"class": "box-info__box-price"})
@@ -35,10 +34,13 @@ def crawlCellphones():
                   "name": name,
                   "img_url": img_url}
         tr_list = technical_detail.find_all("tr")
-        for tr in tr_list:
-            th_list = tr.find_all("th")
-            detail[th_list[0].text.strip().lower()] = th_list[1].text.strip().lower()
-            detail["url"] = url
+        try:
+            for tr in tr_list:
+                th_list = tr.find_all("th")
+                detail[th_list[0].text.strip().lower()] = th_list[1].text.strip().lower()
+                detail["url"] = url
+        except:
+            return []
 
         color_options = soup.find("ul", {"id": "configurable_swatch_color"})
         print(color_options)
@@ -60,14 +62,13 @@ def crawlCellphones():
 
     urls = []
 
-    for i in tqdm(range(8)):
+    for i in tqdm(range(20)):
         try:
             url = base_url.format(i)
             headers = {
                 "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome"
                               "/88.0.4324.182 Safari/537.36"}
             product_list = requests.get(url, headers=headers).json()
-            time.sleep(0.5)
 
             urls += [item["url"] for item in product_list]
         except:
@@ -84,13 +85,14 @@ def crawlCellphones():
 
     df = pd.DataFrame(product_detail)
     df.rename(columns={"dung lượng ram": "ram", "bộ nhớ trong": "bộ nhớ"}, inplace=True)
+    df.drop_duplicates(inplace=True)
     client = MongoClient("mongodb+srv://longgiang:longgiang2010@cluster0.npw0zsg.mongodb.net/")
-    db = client["data-integration"]
+    db = client["data-integration2"]
     collec = db["cellphones"]
 
     date_save = date.today()
     df["date"] = [str(date_save)] * df.shape[0]
-    df.reset_index(inplace=True)
+    df.reset_index(drop=True, inplace=True)
     data_dict = df.to_dict("records")
     collec.insert_many(data_dict)
 

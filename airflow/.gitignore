@@ -1,2 +1,3 @@
 logs/*
-dags/data/
+dags/data/*.csv
+.DS_Store
