@@ -1,0 +1,9 @@
+@use '~element-plus/theme-chalk/src/mixins/mixins' as *;
+@use '@/assets/styles/mixins.scss' as *;
+@use '@/assets/styles/variables.scss' as *;
+
+@include b(input) {
+  // :deep(.el-input__wrapper.is-focus) {
+  //   box-shadow: 0 0 0 1px red inset !important;
+  // }
+}

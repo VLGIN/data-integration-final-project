@@ -1,0 +1,25 @@
+$z-index: (
+  menu: 100,
+  popup: 200,
+  chatBox: 300,
+);
+
+$grid-breakpoints: (
+  sm: 576px,
+  md: 768px,
+  lg: 992px,
+  xl: 1200px,
+);
+
+$color-primary: #409eff;
+
+$color-white: #fff;
+$color-grey: #e7e7e7;
+$color-grey-1: #d1d1d1;
+$color-light-grey: #fafafa;
+$color-light-grey-1: #f4f4f4;
+$color-dark-grey: #909399;
+$color-dark-grey-1: #636363;
+$color-red: #de0b00;
+$color-black: #000;
+$color-green: #5cc046;
