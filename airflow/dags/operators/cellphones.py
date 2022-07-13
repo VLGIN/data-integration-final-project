@@ -48,9 +48,12 @@ def crawlCellphones():
             detail_list = []
             options = color_options.find_all("li")
             for each in options:
-                content = each.find("p")
-                detail["color"] = content.find("strong").text.strip().replace("\n", "")
-                detail["price"] = content.find("span").text
+                try:
+                    content = each.find("p")
+                    detail["color"] = content.find("strong").text.strip().replace("\n", "")
+                    detail["price"] = content.find("span").text
+                except:
+                    continue
                 try:
                     detail["img_url"] = content.find("img")["data-src"]
                 except:
