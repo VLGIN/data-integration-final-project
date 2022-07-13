@@ -69,7 +69,7 @@ def crawlTGDD():
     df = pd.DataFrame.from_dict(data_phones)
     df.rename(columns={"Bộ nhớ trong": "Bộ nhớ"}, inplace=True)
     df.drop_duplicates(inplace=True)
-    client = MongoClient("mongodb+srv://longgiang:longgiang2010@cluster0.npw0zsg.mongodb.net/")
+    client = MongoClient("mongodb+srv://data-integration:data-integration@cluster0.npw0zsg.mongodb.net/")
     db = client["data-integration2"]
     collec = db["thegioididong"]
 

@@ -74,7 +74,7 @@ def crawlDiDongViet():
     df["date"] = [str(date_save)]*df.shape[0]
     df.reset_index(drop=True, inplace=True)
     data_dict = df.to_dict("records")
-    client = MongoClient("mongodb+srv://longgiang:longgiang2010@cluster0.npw0zsg.mongodb.net/")
+    client = MongoClient("mongodb+srv://data-integration:data-integration@cluster0.npw0zsg.mongodb.net/")
     db = client["data-integration2"]
     collec = db["didongviet"]
     collec.insert_many(data_dict)

@@ -4,7 +4,7 @@ def data_matching():
 
     from pymongo import MongoClient
 
-    client = MongoClient("mongodb+srv://longgiang:longgiang2010@cluster0.npw0zsg.mongodb.net/")
+    client = MongoClient("mongodb+srv://data-integration:data-integration@cluster0.npw0zsg.mongodb.net/")
     db = client["data-integration2"]
     df = pd.read_csv(f"/opt/airflow/dags/data/cellphones_didongthongminh_mediamart_thegioididong_phongvu_didongviet.csv")
 
