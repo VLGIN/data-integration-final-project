@@ -74,7 +74,7 @@ async def get_cluster(specs: PhoneSpecs):
             'bộ nhớ': specs.storage,
             'màu sắc': specs.color,
         }
-    ))[0]['data']
+    ))[-1]['data']
 
     chart_data_list = []
 
