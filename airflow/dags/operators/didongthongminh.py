@@ -107,13 +107,14 @@ def crawlDDTM():
 
     df = pd.DataFrame(product_detail)
     df.rename(columns={"bộ nhớ trong": "bộ nhớ"}, inplace=True)
+    df.drop_duplicates(inplace=True)
     client = MongoClient("mongodb+srv://data-integration:data-integration@cluster0.npw0zsg.mongodb.net/")
-    db = client["data-integration"]
+    db = client["data-integration2"]
     collec = db["didongthongminh"]
 
     date_save = date.today()
     df["date"] = [str(date_save)] * df.shape[0]
-    df.reset_index(inplace=True)
+    df.reset_index(drop=True, inplace=True)
     data_dict = df.to_dict("records")
     collec.insert_many(data_dict)
 

@@ -73,6 +73,12 @@ with DAG(
             python_callable=crawlPhongVu
         )
 
+        didongviet = PythonVirtualenvOperator(
+            task_id="didongviet",
+            requirements=requirements_venv,
+            python_callable=crawlDiDongViet
+        )
+
     clean_data_task = PythonVirtualenvOperator(
         task_id="clean_data",
         requirements=requirements_venv,
@@ -100,6 +106,16 @@ with DAG(
             op_kwargs={'collection1': 'cellphones', 'collection2': 'didongthongminh', 'matcher': 'jaccard'}
         )
 
+        phongvu_didongviet = PythonVirtualenvOperator(
+            task_id="phongvu_didongviet",
+            requirements=requirements,
+            provide_context=True,
+            system_site_packages=True,
+            use_dill=True,
+            python_callable=schema_matching,
+            op_kwargs={"collection1": "phongvu", "collection2": "didongviet", "matcher": "jaccard"}
+        )
+
     schema_matching_4 = PythonVirtualenvOperator(
         task_id="matching_four_source",
         requirements=requirements,
@@ -110,14 +126,14 @@ with DAG(
         op_kwargs={'collection1': 'cellphones_didongthongminh', 'collection2': 'mediamart_thegioididong', 'matcher': 'jaccard'}
     )
 
-    schema_matching_5 = PythonVirtualenvOperator(
-        task_id="matching_five_source",
+    schema_matching_6 = PythonVirtualenvOperator(
+        task_id="matching_six_source",
         requirements=requirements,
         provide_context=True,
         system_site_packages=True,
         use_dill=True,
         python_callable=schema_matching,
-        op_kwargs={'collection1': 'cellphones_didongthongminh_mediamart_thegioididong', 'collection2': 'phongvu',
+        op_kwargs={'collection1': 'cellphones_didongthongminh_mediamart_thegioididong', 'collection2': 'phongvu_didongviet',
                    'matcher': 'jaccard'}
     )
 
@@ -127,4 +143,4 @@ with DAG(
         python_callable=data_matching
     )
 
-    tg1 >> clean_data_task >> tg2 >> schema_matching_4 >> schema_matching_5 >> data_matching_task
+    tg1 >> clean_data_task >> tg2 >> schema_matching_4 >> schema_matching_6 >> data_matching_task

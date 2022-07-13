@@ -5,8 +5,8 @@ def data_matching():
     from pymongo import MongoClient
 
     client = MongoClient("mongodb+srv://data-integration:data-integration@cluster0.npw0zsg.mongodb.net/")
-    db = client["data-integration"]
-    df = pd.read_csv(f"/opt/airflow/dags/data/cellphones_didongthongminh_mediamart_thegioididong_phongvu.csv")
+    db = client["data-integration2"]
+    df = pd.read_csv(f"/opt/airflow/dags/data/cellphones_didongthongminh_mediamart_thegioididong_phongvu_didongviet.csv")
 
     df.reset_index(drop=True)
     data_dict = df.to_dict('records')
@@ -86,6 +86,7 @@ def data_matching():
             "ram": data_dict[0]["ram"],
             "bộ nhớ": data_dict[0]["bộ nhớ"],
             "màu sắc": data_dict[0]["color"],
+            "date": data_dict[0]["date"],
             "data": data_dict
         }
         collec.insert_one(data_push)

@@ -136,7 +136,8 @@ def crawlDiDongViet():
         data_dict = data.to_dict('records')
 
         client = MongoClient("mongodb+srv://data-integration:data-integration@cluster0.npw0zsg.mongodb.net/")
-        db = client["data-integration"]
+        db = client["data-integration2"]
+
         collec = db["didongviet"]
 
         collec.insert_many(data_dict)

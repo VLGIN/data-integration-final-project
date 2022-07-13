@@ -49,15 +49,17 @@ def crawl_mediaMart():
     for div in soup.find_all("div", class_="col-6 col-md-3 col-lg-3"):
         data.append(crawl_item(div.find("a", href=True)['href']))
 
-    df = pd.DataFrame(data)
+    df = pd.DataFrame(data*3)
 
     date_save = date.today()
     df["date"] = [str(date_save)] * df.shape[0]
-    df.reset_index(inplace=True)
+    # df.drop_duplicates(inplace=True)
+    df.reset_index(drop=True, inplace=True)
 
     data_dict = df.to_dict('records')
+    df = pd.DataFrame()
     client = MongoClient("mongodb+srv://data-integration:data-integration@cluster0.npw0zsg.mongodb.net/")
-    db = client["data-integration"]
+    db = client["data-integration2"]
     collec = db["mediamart"]
 
     collec.insert_many(data_dict)

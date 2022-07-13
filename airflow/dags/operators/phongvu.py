@@ -33,40 +33,85 @@ def crawlPhongVu():
 
     final_data = []
     for i in range(len(devices)):
-        url = "https://phongvu.vn/" + devices[i]
+        # url = "https://phongvu.vn/" + devices[i]
         headers = {
             "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/88."
                           "0.4324.182 Safari/537.36"}
-        webpage = requests.get(url, headers=headers).text
-        time.sleep(0.5)
-        soup = BeautifulSoup(webpage, 'html.parser')
-        data = soup.find_all('div', {"class": "css-13w7uog"})
+        # webpage = requests.get(url, headers=headers).text
+        # time.sleep(0.5)
+        # soup = BeautifulSoup(webpage, 'html.parser')
+        # data = soup.find_all('div', {"class": "css-13w7uog"})
+        url = "https://discovery.tekoapis.com/api/v1/search"
+        json_data = {
+            'filter': {
+                'priceLte': '0',
+                'priceGte': '0',
+                'categories': [
+                    devices[i].split(".")[-1],
+                ],
+                'hasPromotions': False,
+                'attributes': [],
+            },
+            'pagination': {
+                'itemsPerPage': '100',
+            },
+            'query': '',
+            'sorting': {
+                'sort': 'SORT_BY_SCORE',
+                'order': 'ORDER_BY_DESCENDING',
+            },
+            'returnFilterable': [
+                'FILTER_TYPE_BRAND',
+                'FILTER_TYPE_PRICE',
+                'FILTER_TYPE_ATTRIBUTE',
+                'FILTER_TYPE_CLEARANCE',
+            ],
+            'terminalCode': 'phongvu',
+            'block': {
+                'blockId': '1011',
+            },
+        }
         skus = []
-        for each_item in data:
+        response_data = requests.post(url, headers=headers, json=json_data).json()
+        for each in response_data["result"]["products"]:
             try:
-                a_tag = each_item.find('a', {"class": "css-cbrxda"})['href']
-                sku = a_tag.split("=")[-1]
-                print(sku)
-                skus.append(sku)
+                skus.append(each["productInfo"]["sku"])
             except:
                 pass
+        print(len(skus))
+        # for each_item in data:
+        #     try:
+        #         a_tag = each_item.find('a', {"class": "css-cbrxda"})['href']
+        #         sku = a_tag.split("=")[-1]
+        #         print(sku)
+        #         skus.append(sku)
+        #     except:
+        #         pass
         for sku in skus:
-            detail = get_detail(sku)
-            if "error" in detail:
-                pass
-            final_data.append(detail)
+            sku = int(sku)
+            candidate = [sku-2, sku-1, sku, sku+1, sku+2]
+            candidate = [str(item) for item in candidate]
+            for each in candidate:
+                try:
+                    detail = get_detail(each)
+                except:
+                    continue
+                if "error" in detail:
+                    continue
+                final_data.append(detail)
 
     df = pd.DataFrame(final_data)
     df.rename(columns={"dung lượng (rom)": "bộ nhớ"}, inplace=True)
+    df.drop_duplicates(inplace=True)
     print(df)
     client = MongoClient("mongodb+srv://data-integration:data-integration@cluster0.npw0zsg.mongodb.net/")
-    db = client["data-integration"]
+    db = client["data-integration2"]
     collec = db["phongvu"]
 
     date_save = date.today()
     df["date"] = [str(date_save)] * df.shape[0]
     df.rename(columns={"màu sắc": "color"}, inplace=True)
-    df.reset_index(inplace=True)
+    df.reset_index(drop=True, inplace=True)
     data_dict = df.to_dict("records")
     collec.insert_many(data_dict)
 
