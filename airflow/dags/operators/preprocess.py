@@ -82,7 +82,7 @@ def clean_data():
 
     coll = ["cellphones", "thegioididong", "didongthongminh", "mediamart", "phongvu"]
 
-    client = MongoClient("mongodb+srv://longgiang:longgiang2010@cluster0.npw0zsg.mongodb.net/")
+    client = MongoClient("mongodb+srv://data-integration:data-integration@cluster0.npw0zsg.mongodb.net/")
     db = client["data-integration"]
 
     with open("/opt/airflow/dags/data/color") as f:

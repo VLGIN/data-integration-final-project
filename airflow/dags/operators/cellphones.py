@@ -84,7 +84,7 @@ def crawlCellphones():
 
     df = pd.DataFrame(product_detail)
     df.rename(columns={"dung lượng ram": "ram", "bộ nhớ trong": "bộ nhớ"}, inplace=True)
-    client = MongoClient("mongodb+srv://longgiang:longgiang2010@cluster0.npw0zsg.mongodb.net/")
+    client = MongoClient("mongodb+srv://data-integration:data-integration@cluster0.npw0zsg.mongodb.net/")
     db = client["data-integration"]
     collec = db["cellphones"]
 

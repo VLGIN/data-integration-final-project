@@ -50,7 +50,7 @@ def schema_matching(df1, df2, matcher, fn1, fn2, keep_feats=False):
 
 if __name__ == "__main__":
     collection_name = ["didongviet", "mediamart", "thegioididong", "tiki", "viettel_store"]
-    client = MongoClient("mongodb+srv://longgiang:longgiang2010@cluster0.npw0zsg.mongodb.net/")
+    client = MongoClient("mongodb+srv://data-integration:data-integration@cluster0.npw0zsg.mongodb.net/")
     db = client["data-integration"]
 
     df_list = {}
